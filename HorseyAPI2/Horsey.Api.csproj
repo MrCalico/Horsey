@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Horsey.Data\Horsey.Data.csproj" />
+    <ProjectReference Include="..\Horsey.Domain\Horsey.Domain.csproj" />
+  </ItemGroup>
+
+
+</Project>

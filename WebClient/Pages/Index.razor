@@ -1,0 +1,133 @@
+﻿@page "/"
+
+<div class="jumbotron">
+    <h1>Horsey world!</h1>
+    <h3>Welcome to your Horsey World Adventure.</h3>
+</div>
+
+
+<EditForm Model="@horse" OnValidSubmit="submitted">
+    <label for="horseId">HorseId:</label>
+    <InputNumber id="horseId" @bind-Value="horse.Id"></InputNumber>
+    <label for="horseName">Name:</label>
+    <InputText id="horseName"  @bind-Value="horse.Name"></InputText>
+    <br />
+    <button type="submit" class="btn-success"> Go! </button>
+    <button type="reset" class="btn-secondary"> Cancel </button>
+    <button type="button" class="btn-primary" @onclick="AddHorsey"> Add+ </button>
+
+</EditForm>
+
+@if (horseList != null)
+{
+    foreach (var horse in horseList)
+    {
+        <p>@horse.Id @horse.Name</p>
+    }
+}
+
+<footer class="fixed-bottom"><SurveyPrompt Title="We want to know, How is this experience working for you?" /></footer>
+
+@code {
+
+    private Horse horse = new Horse();
+    private Horse[] horseList;
+    HttpClient MyHttp = new HttpClient();
+
+    protected override async Task OnInitializedAsync()
+    {
+        MyHttp.BaseAddress = new Uri("https://localhost:5011");
+        await refreshList();
+    }
+
+    private async Task submitted()
+    {
+        var response = await MyHttp.GetAsync($"/API/Horsey/{horse.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            horse = await response.Content.ReadFromJsonAsync<Horse>();
+        }
+        else
+        {
+            horse.Name = $"ERR: {response.StatusCode} {response.ReasonPhrase}";
+        }
+    }
+
+    private async Task AddHorsey()
+    {
+        var response = await MyHttp.PostAsJsonAsync<Horse>($"/API/Horsey", new Horse { Name = horse.Name });
+        if (response.IsSuccessStatusCode)
+        {
+            //horseList = await response.Content.ReadFromJsonAsync<Horse[]>();
+            await refreshList();
+        }
+        else
+        {
+            horse.Name = response.ReasonPhrase;
+        }
+    }
+
+    private async Task refreshList()
+    {
+        var response = await MyHttp.GetAsync("/API/Horsey/");
+        if (response.IsSuccessStatusCode)
+        {
+            horseList = await response.Content.ReadFromJsonAsync<Horse[]>();
+        }
+        else
+        {
+            horse.Name = $"ERR: {response.StatusCode} {response.ReasonPhrase}";
+        }
+
+    }
+
+    // Data Structurs
+
+    public class Horse
+    {
+        public Horse()
+        {
+            HealthStats = new List<Health>();
+            Races = new List<Race>();
+        }
+
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime Birthday { get; set; }
+        public List<Health> HealthStats { get; set; }
+        public List<Race> Races { get; set; }
+        public int Standing { get; set; }
+    }
+
+    public class Race
+    {
+        public Race()
+        {
+            Standings = new List<Standing>();
+        }
+
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime Date { get; set; }
+        public List<Standing> Standings { get; set; }
+    }
+
+    public class Health
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "Strain";
+        public string Description { get; set; } = "Left front shoulder strain";
+        public int Holistity { get; set; } = -25;
+    }
+
+    public class Standing
+    {
+        public int RaceId { get; set; }
+        public Race Race { get; set; }
+        public int HorseId { get; set; }
+        public Horse Horse { get; set; }
+        public int Position { get; set; }
+        public float Payout { get; set; }
+    }
+
+}
