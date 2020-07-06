@@ -21,12 +21,21 @@ namespace HorseyAPI.Controllers
 
 
     // GET: api/<HorseyController>
+
     [HttpGet]
     public IActionResult Get()
     {
         List<Horse> horses = _context.Horses.ToList();
         return Ok(horses);
     }
+
+    //[Route("api/TopStanding")]
+    //[HttpGet(Name = "TopStanding")]
+    //    public IActionResult TopStanding()
+    //    {
+    //        List<Horse> horses = _context.Horses.ToList();  //Where(h => h.Standing <= 4).
+    //        return Ok(horses);
+    //    }
 
     // GET api/<HorseyController>/5
     [HttpGet("{id}", Name="GetHorse")]
@@ -45,6 +54,7 @@ namespace HorseyAPI.Controllers
         }
     }
 
+
     // POST api/<HorseyController>
     [HttpPost]
         public IActionResult Post([FromBody] Horse horse)
@@ -58,6 +68,7 @@ namespace HorseyAPI.Controllers
             }
             catch (Exception e) 
             {
+                Console.WriteLine(e.Message);
                 return BadRequest();
             }
             return CreatedAtRoute("GetHorse", new { id = horse.Id } , horse);
@@ -65,14 +76,27 @@ namespace HorseyAPI.Controllers
 
     // PUT api/<HorseyController>/5
     [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] Horse horse)
         {
+            try
+            {
+                _context.Horses.Update(horse);
+                _context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest();
+            }
+            return CreatedAtRoute("GetHorse", new { id = horse.Id }, horse);
         }
 
     // DELETE api/<HorseyController>/5
     [HttpDelete("{id}")]
         public void Delete(int id)
         {
+            _context.Horses.Remove(new Horse { Id = id });
+            _context.SaveChanges();
         }
     }
 }

@@ -1,10 +1,47 @@
 ﻿@page "/"
+@using WebClient.Data;
+
+<style>
+.StandingCard2 {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+</style>
 
 <div class="jumbotron">
     <h1>Horsey world!</h1>
     <h3>Welcome to your Horsey World Adventure.</h3>
 </div>
 
+<div class="card-group">
+    @if (horseList != null)
+    {
+        foreach (var horse in horseList)
+        {
+            if (horse.Standing > 0 & horse.Standing < 4)
+            {
+                <div class="card StandingCard" style="width: 18rem;">
+                    <div class="card-img-top" src="unknown" />
+                    <div class="card-img-top" src="unknown" />
+                    <div class="card-header">
+                        @horse.Standing
+                    </div>
+                    <div class="card-body">
+                        @horse.Name
+                    </div>
+                    <div class="card-footer">_</div>
+                </div>
+            }
+        }
+    }
+</div>
 
 <EditForm Model="@horse" OnValidSubmit="submitted">
     <label for="horseId">HorseId:</label>
@@ -17,14 +54,6 @@
     <button type="button" class="btn-primary" @onclick="AddHorsey"> Add+ </button>
 
 </EditForm>
-
-@if (horseList != null)
-{
-    foreach (var horse in horseList)
-    {
-        <p>@horse.Id @horse.Name</p>
-    }
-}
 
 <footer class="fixed-bottom"><SurveyPrompt Title="We want to know, How is this experience working for you?" /></footer>
 
@@ -67,6 +96,20 @@
         }
     }
 
+    private async Task TopStandingList()
+    {
+        var response = await MyHttp.GetAsync("/API/Horsey/TopStanding");
+        if (response.IsSuccessStatusCode)
+        {
+            horseList = await response.Content.ReadFromJsonAsync<Horse[]>();
+        }
+        else
+        {
+            horse.Name = $"ERR: {response.StatusCode} {response.ReasonPhrase}";
+        }
+
+    }
+
     private async Task refreshList()
     {
         var response = await MyHttp.GetAsync("/API/Horsey/");
@@ -81,53 +124,6 @@
 
     }
 
-    // Data Structurs
 
-    public class Horse
-    {
-        public Horse()
-        {
-            HealthStats = new List<Health>();
-            Races = new List<Race>();
-        }
-
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public DateTime Birthday { get; set; }
-        public List<Health> HealthStats { get; set; }
-        public List<Race> Races { get; set; }
-        public int Standing { get; set; }
-    }
-
-    public class Race
-    {
-        public Race()
-        {
-            Standings = new List<Standing>();
-        }
-
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public DateTime Date { get; set; }
-        public List<Standing> Standings { get; set; }
-    }
-
-    public class Health
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = "Strain";
-        public string Description { get; set; } = "Left front shoulder strain";
-        public int Holistity { get; set; } = -25;
-    }
-
-    public class Standing
-    {
-        public int RaceId { get; set; }
-        public Race Race { get; set; }
-        public int HorseId { get; set; }
-        public Horse Horse { get; set; }
-        public int Position { get; set; }
-        public float Payout { get; set; }
-    }
 
 }
