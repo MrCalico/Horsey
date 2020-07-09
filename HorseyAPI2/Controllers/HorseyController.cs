@@ -29,14 +29,6 @@ namespace HorseyAPI.Controllers
         return Ok(horses);
     }
 
-    //[Route("api/TopStanding")]
-    //[HttpGet(Name = "TopStanding")]
-    //    public IActionResult TopStanding()
-    //    {
-    //        List<Horse> horses = _context.Horses.ToList();  //Where(h => h.Standing <= 4).
-    //        return Ok(horses);
-    //    }
-
     // GET api/<HorseyController>/5
     [HttpGet("{id}", Name="GetHorse")]
     [ActionName("GetHorse")]

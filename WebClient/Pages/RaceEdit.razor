@@ -1,26 +1,21 @@
-﻿@page "/HorseEdit/{Id}"
+﻿@page "/RaceEdit/{Id}"
 @using WebClient.Data;
-@using System.Text.Json;
-@using System.Text.Json.Serialization;
 @inject NavigationManager NavigationManager
 
-<h3>Horse Edit</h3>
+<h3>Race Details</h3>
 
-<div class="container">
-
+@if (race == null)
+{
+    <div class="alert-heading">
+        <span>Loading...</span>
+    </div>
+}
+else
+{
     <form>
-
-        <!--<label>Horse Id:@Id</label>-->
-        @if (horse == null)
-        {
-            <span>Loading...</span>
-        }
-        else
-        {
-            <label> Id:</label><input type="number" @bind-value="horse.Id" />
-            <label> Name:</label><input type="text" @bind-value="horse.Name" />
-            <label> Standing:</label><input type="number" @bind-value="horse.Standing" />
-            <label> BirthDate:</label><input type="date" @bind-value="horse.Birthday" />
+            <label>Id:  </label><input type="number" @bind-value="race.Id" />
+            <label>Name:</label><input type="text"   @bind-value="race.Name" />
+            <label>Date:</label><input type="date"   @bind-value="race.Date" />
 
             <button type="button" @onclick="Update">
                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-return-left" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -42,44 +37,38 @@
                     <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
                 </svg>
             </button>
-        }
     </form>
-    @if (Status != null) {
-        <span>Status: @Status</span>
-    }
-</div>
-
-
+}
+<div>@Status</div>
 
 @code {
-
     [Parameter]
     public string Id { get; set; }
 
     HttpClient MyHttp = new HttpClient();
-    Horse horse;
+    Race race;
     string Status = "Page Starting";
 
     protected override async Task OnInitializedAsync()
     {
         MyHttp.BaseAddress = new Uri("Https://localhost:5011");
-        var response = await MyHttp.GetAsync($"/API/Horsey/{Id}");
+        var response = await MyHttp.GetAsync($"/API/Races/{Id}");
         if (response.IsSuccessStatusCode)
         {
-            horse = await response.Content.ReadFromJsonAsync<Horse>();
+            race = await response.Content.ReadFromJsonAsync<Race>();
         }
         else
         {
-            horse.Name = $"ERR: {response.StatusCode} {response.ReasonPhrase}";
+            race.Name = $"ERR: {response.StatusCode} {response.ReasonPhrase}";
         }
     }
 
     protected async Task Update()
     {
-        var response = await MyHttp.PutAsJsonAsync($"/Api/Horsey/{horse.Id}", horse);
-        if(response.IsSuccessStatusCode)
+        var response = await MyHttp.PutAsJsonAsync($"/Api/Races/{race.Id}", race);
+        if (response.IsSuccessStatusCode)
         {
-            NavigationManager.NavigateTo("HorseList");
+            NavigationManager.NavigateTo("RaceList");
         }
         else
         {
@@ -89,19 +78,20 @@
 
     protected void Add()
     {
-        NavigationManager.NavigateTo("HorseList");
+        NavigationManager.NavigateTo("RaceList");
     }
 
-    protected async Task  Delete()
+    protected async Task Delete()
     {
-        var response = await MyHttp.DeleteAsync($"/Api/Horsey/{horse.Id}");
+        var response = await MyHttp.DeleteAsync($"/Api/Races/{race.Id}");
         if (response.IsSuccessStatusCode)
         {
-            NavigationManager.NavigateTo("HorseList");
+            NavigationManager.NavigateTo("RaceList");
         }
         else
         {
             Status = response.ReasonPhrase.ToString();
         }
     }
+
 }
