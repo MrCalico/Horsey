@@ -15,14 +15,14 @@ namespace HorseyAPI.Controllers
     public class HorseyController : ControllerBase
     {
         private static HorseyContext _context;
-        public HorseyController() {
-            _context = new HorseyContext();
+        public HorseyController(HorseyContext context)
+        {
+            _context = context;
         }
 
+        // GET: api/<HorseyController>
 
-    // GET: api/<HorseyController>
-
-    [HttpGet]
+        [HttpGet]
     public IActionResult Get()
     {
         List<Horse> horses = _context.Horses.ToList();

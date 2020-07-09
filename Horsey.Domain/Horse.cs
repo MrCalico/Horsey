@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Horsey.Domain
 {
@@ -17,5 +18,9 @@ namespace Horsey.Domain
         public List<Health> HealthStats { get; set; }
         public List<Race> Races { get; set; }
         public int Standing { get; set; }
+        /*
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
+        */
     }
 }
