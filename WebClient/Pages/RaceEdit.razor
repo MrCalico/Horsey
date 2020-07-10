@@ -16,6 +16,19 @@ else
             <label>Id:  </label><input type="number" @bind-value="race.Id" />
             <label>Name:</label><input type="text"   @bind-value="race.Name" />
             <label>Date:</label><input type="date"   @bind-value="race.Date" />
+        <br />
+            @if (race.Standings != null)
+            {
+                foreach (Standing standing in race.Standings)
+                {
+                    <div class="row">
+                        <label>Postiion: </label><input type="text" @bind-value="standing.Position" />
+                        <label>Horse: </label><input type="number" width="1" @bind-value="standing.HorseId" /><input type="text" @bind-value="standing.Horse.Name" />
+                    </div>
+                }
+            }
+            <label>Number of Standings</label>@race.Standings.Count();
+        <br />
 
             <button type="button" @onclick="Update">
                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-return-left" fill="currentColor" xmlns="http://www.w3.org/2000/svg">

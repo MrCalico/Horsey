@@ -33,7 +33,16 @@ namespace Horsey.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Race>> GetRace(int id)
         {
-            var race = await _context.Races.FindAsync(id);
+            //Include(standings => standings.Standings) //AnyAsync<Race>();
+            // FindAsync(id); 
+            // Include(standings => standings.Standings).Where(r => r.Id == id).ToArrayAsync();
+
+            var race = await _context.Races
+                                      .Where( r => r.Id == id)
+                                      .Include( s => s.Standings)
+                                      .ThenInclude( h => h.Horse)
+                                      .FirstOrDefaultAsync<Race>();
+            race.Standings = race.Standings.OrderBy(s => s.Position).ToList();  // Order by Position
 
             if (race == null)
             {
