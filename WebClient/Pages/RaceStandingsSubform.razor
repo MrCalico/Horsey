@@ -1,0 +1,56 @@
+﻿@page "/RaceStandingsSubForm/{Id}"
+@using WebClient.Data;
+@inject NavigationManager NavigationManager
+
+<h3>RaceStandingsSubform</h3>
+
+
+@if (race.Standings != null)
+{
+    foreach (Standing standing in race.Standings)
+    {
+        <div class="row">
+            <label>Postiion: </label><input type="text" @bind-value="standing.Position" />
+            <label>Horse: </label><input type="number" width="1" @bind-value="standing.HorseId" /><input type="text" @bind-value="standing.Horse.Name" />
+            <ToolbarUpdateCancelDelete  CmdChanged="ClickHandler"></ToolbarUpdateCancelDelete>
+        </div>
+    }
+}
+<label>Number of Standings</label>@race.Standings.Count();
+<br />
+
+@code {
+
+    [Parameter]
+    public Race race { get; set; }
+
+    private int cmd { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //ButtonClick cmd = ButtonClick.Cancel;
+    }
+
+
+    async void ClickHandler(int cmd)
+    {
+        switch (cmd)
+        {
+            case (int)ButtonClick.Update:
+                Console.WriteLine("ButtonClick.Update");
+                break;
+            case (int)ButtonClick.Cancel:
+                Console.WriteLine("ButtonClick.Cancel");
+                break;
+            case (int)ButtonClick.Delete:
+                Console.WriteLine("ButtonClick.Delete");
+                break;
+        }
+    }
+
+    private void Update() { }
+    private void Add() { }
+    private void Delete() { }
+
+
+}

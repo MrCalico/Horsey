@@ -1,0 +1,19 @@
+﻿@page "/parentcomponent"
+<CustomTextbox OnClick="ClickHandler" @bind-Value="phone" FieldName="Phone"></CustomTextbox>
+<CustomTextbox @bind-Value="name" FieldName="Name" MaxLength="20" />
+<CustomTextbox @bind-Value="address" FieldName="Address" />
+<label>Message: </label>@message
+
+@code {
+    string name = "Sarath Lal";
+    string address = "Kakkanad";
+    string phone = "555-1212";
+
+    string message = "Hello from ParentComponent";
+    
+    void ClickHandler(string newMessage)
+    {
+        message = newMessage;
+    }
+
+}

@@ -63,7 +63,9 @@ namespace Horsey.Api.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(race).State = EntityState.Modified;
+            _context.Entry(race).State = EntityState.Modified;                      // Entiry Methdod!  (Race Only Update)
+            //_context.Races.Update(race);                                            // Update everything for now.
+            //_context.Entry(race.Standings).State = EntityState.Modified;
 
             try
             {
