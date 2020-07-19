@@ -1,0 +1,66 @@
+﻿@page "/RaceEdit/{id:int}"
+@using Horsey.Domain
+@using Horsey.Data
+@inject HorseyContext context;
+@inject NavigationManager NavigationManager;
+
+@if (race != null)
+{
+    if (Row < 1)
+    {
+        <label class="col-1">Id</label>
+        <label class="col-3">Name</label>
+        <label class="col-3">Date</label>
+        <label class="col-3">Standings</label>
+    }
+<EditForm Model="race">
+    <InputNumber class="col-1" @bind-Value="race.Id" />
+    <InputText class="col-3" @bind-Value="race.Name" @oninput="CheckChanged"/>
+    <InputDate class="col-3" @bind-Value="race.Date" @oninput="CheckChanged"/>
+    <label class="col-1 ">@race.Standings.Count()</label>
+    <ToolJumpRelated @bind-isClicked="@isJumped"></ToolJumpRelated>
+    @if (isModified)
+    {
+        <ToolUpdateSave @bind-isClicked="@isModified"></ToolUpdateSave>
+    }
+</EditForm>
+}
+
+
+@code {
+    [Parameter]
+    public int id { set; get; }
+    [Parameter]
+    public int Row { set; get; }
+
+    private bool isModified = false;
+
+    private bool _isJumped;
+    private bool isJumped {
+        get
+        {
+            return _isJumped;
+        }
+        set
+        { _isJumped = isJumped;
+            NavigationManager.NavigateTo($"/RaceMaster/{race.Id}");
+        }
+    }
+
+    private HorseyContext _context;
+    private Race race;
+
+    protected override Task OnInitializedAsync()
+    {
+        _context = context;
+        race = _context.Races.Find(id);
+        return base.OnInitializedAsync();
+    }
+
+    private void CheckChanged()
+    {
+        isModified = true;
+    }
+
+    private void JumpRelated() { }
+}

@@ -1,34 +1,54 @@
 ﻿@page "/RaceStandingsSubForm/{Id}"
 @using WebClient.Data;
 @inject NavigationManager NavigationManager
+@using WebClient.Shared;
+
 
 <h3>RaceStandingsSubform</h3>
 
 
-@if (race.Standings != null)
-{
-    foreach (Standing standing in race.Standings)
-    {
-        <div class="row">
-            <label>Postiion: </label><input type="text" @bind-value="standing.Position" />
-            <label>Horse: </label><input type="number" width="1" @bind-value="standing.HorseId" /><input type="text" @bind-value="standing.Horse.Name" />
-            <ToolbarUpdateCancelDelete  CmdChanged="ClickHandler"></ToolbarUpdateCancelDelete>
-        </div>
+    @if (race.Standings != null)
+     {
+    <table id="example" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <td>Position</td>
+                <td>Standing</td>
+                <td>HorseId</td>
+                <td>Horse Name</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Standing standing in race.Standings)
+            {
+            <tr>
+                <td><input type="text" @bind-value="standing.Position" /></td>
+                <td><input type="number" width="1" @bind-value="standing.HorseId" /></td>
+                <td><input type="text" @bind-value="standing.Horse.Name" /></td>
+                <td><ToolbarUpdateCancelDelete CmdChanged="ClickHandler"></ToolbarUpdateCancelDelete></td>
+            </tr>
+            }
+        </tbody>
+    </table>
     }
-}
-<label>Number of Standings</label>@race.Standings.Count();
-<br />
+  }
+        
+    <label>Number of Standings</label>
+    @race.Standings.Count();
+    <br />
 
-@code {
+    @code {
 
-    [Parameter]
-    public Race race { get; set; }
+        [Parameter]
+        public Race race { get; set; }
 
-    private int cmd { get; set; }
+private int cmd { get; set; }
+
+    private HttpClient _httpClient = new HttpClient();
 
     protected override async Task OnInitializedAsync()
     {
-        //ButtonClick cmd = ButtonClick.Cancel;
+        // I don't know yet
     }
 
 
@@ -53,4 +73,4 @@
     private void Delete() { }
 
 
-}
+    }

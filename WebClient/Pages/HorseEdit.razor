@@ -56,12 +56,14 @@
     [Parameter]
     public string Id { get; set; }
 
-    HttpClient MyHttp = new HttpClient();
+    private HttpClient MyHttp = new HttpClient(); 
     Horse horse;
     string Status = "Page Starting";
 
     protected override async Task OnInitializedAsync()
     {
+        MyHttp = new HttpClient();
+
         MyHttp.BaseAddress = new Uri("Https://localhost:5011");
         var response = await MyHttp.GetAsync($"/API/Horsey/{Id}");
         if (response.IsSuccessStatusCode)

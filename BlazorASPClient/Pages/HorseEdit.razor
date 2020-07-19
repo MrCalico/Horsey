@@ -1,0 +1,46 @@
+﻿@page "/HorseEdit/{id:int}"
+@using Horsey.Domain
+@using Horsey.Data
+@inject HorseyContext context;
+
+@if (horse != null)
+{
+    if (Row<1) { 
+    <label class="col-1">Id</label>
+    <label class="col-3">Name</label>
+    <label class="col-1">Standing</label>
+    }
+<EditForm Model="horse">
+    <InputNumber class="col-1" @bind-Value="horse.Id" />
+    <InputText class="col-3" @bind-Value="horse.Name" />
+    <InputNumber class="col-1" @bind-Value="horse.Standing" @oninput="CheckChanged" />
+    @if(isModified) { <ToolUpdateSave @bind-isClicked="@isModified"></ToolUpdateSave>
+    }
+</EditForm>
+}
+
+@code {
+
+    [Parameter]
+    public int id { set; get; }
+    [Parameter]
+    public int Row { set; get; }
+
+    private HorseyContext _context;
+    public Horse horse;
+
+    private bool isModified = false;
+
+    protected override Task OnInitializedAsync()
+    {
+        _context = context;
+        horse = _context.Horses.Find(id);
+        return base.OnInitializedAsync();
+    }
+
+    private void CheckChanged()
+    {
+        isModified = true;
+    }
+
+}

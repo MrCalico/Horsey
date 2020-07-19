@@ -1,0 +1,22 @@
+﻿@page "/RaceList"
+@using Horsey.Domain
+@using Horsey.Data
+@inject HorseyContext context; 
+
+<h3>RaceList</h3>
+@foreach (Race race in _context.Races)
+{
+    <RaceEdit Row="@cnt" Id="@race.Id" /> cnt++;
+}
+
+@code {
+
+    private HorseyContext _context;
+    private int cnt = 0;
+    protected override Task OnInitializedAsync()
+    {
+        _context = context;
+        return base.OnInitializedAsync();
+    }
+
+}
