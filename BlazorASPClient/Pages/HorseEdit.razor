@@ -5,17 +5,25 @@
 
 @if (horse != null)
 {
-    if (Row<1) { 
-    <label class="col-1">Id</label>
-    <label class="col-3">Name</label>
-    <label class="col-1">Standing</label>
+    if (Row < 1)
+    {
+        <label class="col-1">Id</label>
+        <label class="col-3">Name</label>
+        <label class="col-2">Birthday</label>
+        <label class="col-1">Age</label>
+        <label class="col-1">Standing</label>
     }
-<EditForm Model="horse">
-    <InputNumber class="col-1" @bind-Value="horse.Id" />
-    <InputText class="col-3" @bind-Value="horse.Name" @oninput="CheckChanged"/>
-    <InputNumber class="col-1" @bind-Value="horse.Standing" @oninput="CheckChanged" />
-    @if(isModified) { <ToolUpdateSave @bind-isClicked="@isSaveClicked"></ToolUpdateSave> }
-</EditForm>
+    <EditForm Model="horse">
+        <InputNumber class="col-1" @bind-Value="horse.Id" />
+        <InputText class="col-3" @bind-Value="horse.Name" @oninput="CheckChanged" />
+        <InputDate class="col-2" @bind-Value="horse.Birthday" @oninput="CheckChanged"></InputDate>
+        <InputNumber class="col-1" @bind-Value="age"></InputNumber>
+        <InputNumber class="col-1" @bind-Value="horse.Standing" @oninput="CheckChanged" />
+        @if (isModified)
+        {<ToolUpdateSave @bind-isClicked="@isSaveClicked"></ToolUpdateSave>}
+        @if (isSaved)
+        {<span class="badge-success">Saved</span>}
+    </EditForm>
 }
 
 @code {
@@ -29,6 +37,7 @@
     public Horse horse;
 
     private bool isModified = false;
+    private bool isSaved = false;
 
     protected override Task OnInitializedAsync()
     {
@@ -43,6 +52,7 @@
     private void CheckChanged()
     {
         isModified = true;
+        isSaved = false;
     }
 
     private bool isSaveClicked
@@ -56,15 +66,32 @@
                     _context.Horses.Add(horse);
                     _context.SaveChanges();
                     isModified = false;
+                    isSaved = true;
                 }
                 else
                 {
                     _context.Horses.Update(horse);
                     _context.SaveChanges();
                     isModified = false;
+                    isSaved = true;
                 }
             }
         }
         get { return isModified; }
+    }
+
+    private int age { get { return Age(horse.Birthday); } set { } }
+
+    private int Age(DateTime Birthday)
+    {
+        if (Birthday == null)
+        {
+            Birthday = DateTime.Now;
+        }
+        DateTime dob = Birthday;
+        DateTime PresentYear = DateTime.Now;
+        TimeSpan ts = PresentYear - dob;
+        DateTime Age = DateTime.MinValue.AddDays(ts.Days);
+        return Age.Year;
     }
 }

@@ -1,0 +1,67 @@
+﻿@page "/HorseDisplayCard/{Id:int}"
+@using Horsey.Data
+@using Horsey.Domain
+@inject Horsey.Data.HorseyContext context;
+
+<style>
+    .StandingCard2 {
+        background: lightyellow;
+        bottom: 0;
+        box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+        display: none;
+        left: 0;
+        padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+    }
+</style>
+
+@*<img src="/Images/Horse-Devil.png" asp-append-version="true" width="300px" />*@
+
+<div class="card-group">
+    <div class="card StandingCard" style="width: 18rem;">
+        <div class="card-img-top img-fluid align-content-center">
+            <img src="@getHorseImagePath(horse.Id)" width="300px"  />
+        </div>
+        <div class="card-header text-center bold">
+            @horse.Standing
+        </div>
+        <div class="card-body">
+            <div class="text-center bold">@horse.Name</div>
+        </div>
+        <div class="card-footer text-center">@Age(horse.Birthday) years</div>
+    </div>
+</div>
+
+@code {
+
+        [Parameter]
+        public int Id { get; set; }
+
+    private HorseyContext _context;
+    private int cnt = 0;
+    private Horse horse;
+
+    protected override Task OnInitializedAsync()
+    {
+        _context = context;
+        horse = _context.Horses.Find(Id);
+        return base.OnInitializedAsync();
+    }
+
+    string getHorseImagePath(int id)
+    {
+        string[] HorseColors = { "None", "Blue","Brown","Red","Green","Yellow","Pink","Grey","Orange","Purple","Devil"  };
+        return $"/Images/Horse-{HorseColors[id]}.png";
+    }
+
+    private int Age(DateTime Birthday)
+    {
+        DateTime dob = Birthday;
+        DateTime PresentYear = DateTime.Now;
+        TimeSpan ts = PresentYear - dob;
+        DateTime Age = DateTime.MinValue.AddDays(ts.Days);
+        return Age.Year;
+    }
+}

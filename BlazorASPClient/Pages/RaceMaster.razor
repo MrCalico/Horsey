@@ -26,6 +26,9 @@
             <ToolUpdateSave @bind-isClicked="@isModified"></ToolUpdateSave>
         }
     </EditForm>
+    <div class="float-right col-4">
+        <ToolAddNew @bind-isClicked="isAddClicked"></ToolAddNew>
+    </div>
     if (race.Standings.ToList() != null)
     {
         int row = 0;
@@ -33,31 +36,38 @@
         {
             <StandingEdit RaceId="standing.RaceId" Position="standing.Position" Row="row++"></StandingEdit>
         }
-
     }
 }
-
+@if(isAddClicked)
+{
+    <div>
+        <StandingEdit Row="@(1)" RaceId="id" Position="@(0)"/>
+    </div>
+}
 
 @code {
-    [Parameter]
-    public int id { set; get; }
-    [Parameter]
-    public int Row { set; get; }
+        [Parameter]
+        public int id { set; get; }
+        [Parameter]
+        public int Row { set; get; }
 
     private bool isModified = false;
 
     private bool _isJumped;
     private bool isJumped
     {
-        get
-        {
-            return _isJumped;
-        }
-        set
+        get { return _isJumped; }
+        set 
         {
             _isJumped = isJumped;
             NavigationManager.NavigateTo($"/RaceList");
         }
+    }
+
+    private bool _isAddClicked = false;
+    private bool isAddClicked {
+        get { return _isAddClicked; } 
+        set { _isAddClicked = value; } 
     }
 
     private HorseyContext _context;
@@ -66,12 +76,11 @@
     protected override Task OnInitializedAsync()
     {
         _context = context;
-        // race = _context.Races.Find(id);
         race = _context.Races
-                          .Where(r => r.Id == id)
-                          .Include(s => s.Standings)
-                          .ThenInclude(h => h.Horse)
-                          .FirstOrDefault<Race>();
+                            .Where(r => r.Id == id)
+                            .Include(s => s.Standings)
+                            .ThenInclude(h => h.Horse)
+                            .FirstOrDefault<Race>();
 
         race.Standings = race.Standings.OrderBy(s => s.Position).ToList();  // Order by Position
         return base.OnInitializedAsync();

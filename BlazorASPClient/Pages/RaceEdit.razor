@@ -15,11 +15,12 @@
     }
 <EditForm Model="race">
     <InputNumber class="col-1" @bind-Value="race.Id" />
-    <InputText class="col-3" @bind-Value="race.Name" @oninput="CheckChanged"/>
-    <InputDate class="col-3" @bind-Value="race.Date" @oninput="CheckChanged"/>
+    <InputText class="col-3" @bind-Value="race.Name" @oninput="CheckChanged" />
+    <InputDate class="col-3" @bind-Value="race.Date" @oninput="CheckChanged" />
     <label class="col-1 ">@race.Standings.Count()</label>
     <ToolJumpRelated @bind-isClicked="@isJumped"></ToolJumpRelated>
     @if (isModified) { <ToolUpdateSave @bind-isClicked="@isSaveClicked"></ToolUpdateSave> }
+    @if (isSaved)    { <span class="badge-success">Saved</span>    }
 </EditForm>
 }
 
@@ -31,6 +32,7 @@
     public int Row { set; get; }
 
     private bool isModified { set; get; } = false;
+    private bool isSaved { get; set; } = false;
 
     private bool _isJumped;
     private bool isJumped {
@@ -65,6 +67,7 @@
     private void CheckChanged()
     {
         isModified = true;
+        isSaved = false;
     }
 
 
@@ -77,12 +80,14 @@
                 {
                     _context.Races.Add(race);
                     _context.SaveChanges();
+                    isSaved = true;
                     isModified = false;
                 }
                 else
                 {
                     _context.Races.Update(race);
                     _context.SaveChanges();
+                    isSaved = true;
                     isModified = false;
                 }
             }

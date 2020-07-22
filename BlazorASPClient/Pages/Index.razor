@@ -4,23 +4,9 @@
 @inject HorseyContext context;
 
 
-<style>
-    .StandingCard2 {
-        background: lightyellow;
-        bottom: 0;
-        box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
-        display: none;
-        left: 0;
-        padding: 0.6rem 1.25rem 0.7rem 1.25rem;
-        position: fixed;
-        width: 100%;
-        z-index: 1000;
-    }
-</style>
-
-<div class="jumbotron">
-    <h1>HorseyLand!</h1>
-    <h2>Welcome to a Horseyland Adventure.</h2>
+<div class="jumbotron jumbotron-fluid jumbotron-main" >
+    <h1 class="text-center">Horseyland!</h1>
+    <h2 class="text-center">Welcome to Horseyland Adventure.</h2>
 </div>
 
 
@@ -31,15 +17,8 @@
         {
             if (horse.Standing > 0 & horse.Standing < 4)
             {
-                <div class="card StandingCard" style="width: 18rem;">
-                    <div class="card-img-top" src="unknown" />
-                    <div class="card-header">
-                        @horse.Standing
-                    </div>
-                    <div class="card-body">
-                        @horse.Name
-                    </div>
-                    <div class="card-footer">@Age(horse.Birthday) years</div>
+                <div class="col-4">
+                    <HorseDisplayCard Id="@horse.Id" />
                 </div>
             }
         }
@@ -59,13 +38,6 @@
         return base.OnInitializedAsync();
     }
 
-    private int Age(DateTime Birthday)
-    {
-        DateTime dob = Birthday;
-        DateTime PresentYear = DateTime.Now;
-        TimeSpan ts = PresentYear - dob;
-        DateTime Age = DateTime.MinValue.AddDays(ts.Days);
-        return Age.Year;
-    }
+
 
 }

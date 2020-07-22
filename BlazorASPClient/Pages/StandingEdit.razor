@@ -89,10 +89,17 @@
     protected override Task OnInitializedAsync()
     {
         _context = context;
-        standing = _context.Standings
-            .Where(s => s.RaceId == RaceId && s.Position == Position)
-            .FirstOrDefault<Standing>();
-        horseId = standing.HorseId;
+        if (Position == 0)
+        {
+            standing = new Standing { RaceId = RaceId };
+        }
+        else
+        {
+            standing = _context.Standings
+                .Where(s => s.RaceId == RaceId && s.Position == Position)
+                .FirstOrDefault<Standing>();
+            horseId = standing.HorseId;
+        }
         return base.OnInitializedAsync();
     }
 
