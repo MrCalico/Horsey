@@ -1,0 +1,109 @@
+﻿@page "/StandingEdit/{id:int}"
+@using Horsey.Domain
+@using Horsey.Data
+@inject HorseyContext context;
+@inject NavigationManager NavigationManager;
+
+@if (standing != null)
+{
+    if (Row < 1)
+    {
+        <label class="col-1">Postion</label>
+        <label class="col-1">HorseId</label>
+        <label class="col-3">Horse</label>
+    }
+    <EditForm Model="standing">
+        <InputNumber class="col-1" @bind-Value="standing.Position" />
+        <InputNumber class="col-1" @bind-Value="standing.HorseId" @oninput="CheckChanged" />
+        @*<InputText   class="col-3" @bind-Value="standing.Horse.Name"   @oninput="CheckChanged" />*@
+        <CustomInputSelect class="col-3" @bind-Value="horseId">
+            @foreach (Horse horse in _context.Horses)
+            {
+                <option value="@horse.Id">@horse.Name</option>
+            }
+        </CustomInputSelect>
+        @*<ToolJumpRelated @bind-isClicked="@isJumped"></ToolJumpRelated>*@
+        @if (isModified)
+        {
+            <ToolUpdateSave @bind-isClicked="@isClicked"></ToolUpdateSave>
+        }
+        @if (isSaved)
+        {
+            <span class="badge-success">Saved</span>
+        }
+    </EditForm>
+}
+
+
+@code {
+    [Parameter]
+    public int RaceId { set; get; }
+    [Parameter]
+    public int Position { set; get; }
+    [Parameter]
+    public int Row { set; get; }
+
+    private bool isModified = false;
+    private bool isSaved = false;
+
+    private bool isClicked {
+        set {
+            _context.Standings.Update(standing);
+            _context.SaveChanges();
+            isModified = false;
+            isSaved = true;
+        }
+        get { return false; }
+    }
+
+    public int _horseId;
+    public int horseId
+    {
+        set {
+            if (standing.HorseId != value && value>0) { isModified = true; }
+            _horseId = value;
+            standing.HorseId = _horseId;
+        }
+        get {
+            return _horseId;
+        }
+    }
+
+    private bool _isJumped;
+    private bool isJumped
+    {
+        get
+        {
+            return _isJumped;
+        }
+        set
+        {
+            _isJumped = isJumped;
+            //NavigationManager.NavigateTo($"/StandingMaster/{standing.Id}");
+        }
+    }
+
+    private HorseyContext _context;
+    private Standing standing;
+
+    protected override Task OnInitializedAsync()
+    {
+        _context = context;
+        standing = _context.Standings
+            .Where(s => s.RaceId == RaceId && s.Position == Position)
+            .FirstOrDefault<Standing>();
+        horseId = standing.HorseId;
+        return base.OnInitializedAsync();
+    }
+
+    private void CheckChanged()
+    {
+        isModified = true;
+    }
+
+    private void HorseChanged() {
+        Console.WriteLine("HorseSelected");
+    }
+
+    private void JumpRelated() { }
+}

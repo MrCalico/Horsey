@@ -1,7 +1,71 @@
 ﻿@page "/"
+@using Horsey.Data;
+@using Horsey.Domain;
+@inject HorseyContext context;
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+<style>
+    .StandingCard2 {
+        background: lightyellow;
+        bottom: 0;
+        box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+        display: none;
+        left: 0;
+        padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+    }
+</style>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<div class="jumbotron">
+    <h1>HorseyLand!</h1>
+    <h2>Welcome to a Horseyland Adventure.</h2>
+</div>
+
+
+<div class="card-group">
+    @if (HorseList != null)
+    {
+        foreach (var horse in HorseList)
+        {
+            if (horse.Standing > 0 & horse.Standing < 4)
+            {
+                <div class="card StandingCard" style="width: 18rem;">
+                    <div class="card-img-top" src="unknown" />
+                    <div class="card-header">
+                        @horse.Standing
+                    </div>
+                    <div class="card-body">
+                        @horse.Name
+                    </div>
+                    <div class="card-footer">@Age(horse.Birthday) years</div>
+                </div>
+            }
+        }
+    }
+</div>
+
+@code {
+
+    private HorseyContext _context;
+    private int cnt = 0;
+    private List<Horse> HorseList;
+
+    protected override Task OnInitializedAsync()
+    {
+        _context = context;
+        HorseList = _context.Horses.Take(3).ToList<Horsey.Domain.Horse>();
+        return base.OnInitializedAsync();
+    }
+
+    private int Age(DateTime Birthday)
+    {
+        DateTime dob = Birthday;
+        DateTime PresentYear = DateTime.Now;
+        TimeSpan ts = PresentYear - dob;
+        DateTime Age = DateTime.MinValue.AddDays(ts.Days);
+        return Age.Year;
+    }
+
+}

@@ -4,14 +4,16 @@ using Horsey.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Horsey.Data.Migrations
 {
     [DbContext(typeof(HorseyContext))]
-    partial class HorseyContextModelSnapshot : ModelSnapshot
+    [Migration("20200721112436_addPrimaryKeyStandings")]
+    partial class addPrimaryKeyStandings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

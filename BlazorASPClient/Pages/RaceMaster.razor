@@ -1,6 +1,8 @@
 ﻿@page "/RaceMaster/{id:int}"
 @using Horsey.Domain
 @using Horsey.Data
+@using Microsoft.EntityFrameworkCore;
+
 @inject HorseyContext context;
 @inject NavigationManager NavigationManager;
 
@@ -24,6 +26,15 @@
             <ToolUpdateSave @bind-isClicked="@isModified"></ToolUpdateSave>
         }
     </EditForm>
+    if (race.Standings.ToList() != null)
+    {
+        int row = 0;
+        foreach (Standing standing in race.Standings.ToList())
+        {
+            <StandingEdit RaceId="standing.RaceId" Position="standing.Position" Row="row++"></StandingEdit>
+        }
+
+    }
 }
 
 
@@ -55,7 +66,14 @@
     protected override Task OnInitializedAsync()
     {
         _context = context;
-        race = _context.Races.Find(id);
+        // race = _context.Races.Find(id);
+        race = _context.Races
+                          .Where(r => r.Id == id)
+                          .Include(s => s.Standings)
+                          .ThenInclude(h => h.Horse)
+                          .FirstOrDefault<Race>();
+
+        race.Standings = race.Standings.OrderBy(s => s.Position).ToList();  // Order by Position
         return base.OnInitializedAsync();
     }
 

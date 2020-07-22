@@ -33,8 +33,14 @@ namespace Horsey.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Standing>()
-                .HasKey(s => new { s.RaceId, s.HorseId });
+            //modelBuilder.Entity<Standing>()
+            //    .HasKey(s => new { s.RaceId, s.HorseId });            
+            //modelBuilder.Entity<Standing>()
+                //.HasNoKey()
+                //.HasOne(s => s.Race)
+                //.WithMany(r => r.Standings)
+                //.HasForeignKey(s => s.RaceId)
+                //.HasPrincipalKey(x=>x.Id);
 
         }
     }

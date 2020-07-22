@@ -19,10 +19,7 @@
     <InputDate class="col-3" @bind-Value="race.Date" @oninput="CheckChanged"/>
     <label class="col-1 ">@race.Standings.Count()</label>
     <ToolJumpRelated @bind-isClicked="@isJumped"></ToolJumpRelated>
-    @if (isModified)
-    {
-        <ToolUpdateSave @bind-isClicked="@isModified"></ToolUpdateSave>
-    }
+    @if (isModified) { <ToolUpdateSave @bind-isClicked="@isSaveClicked"></ToolUpdateSave> }
 </EditForm>
 }
 
@@ -33,7 +30,7 @@
     [Parameter]
     public int Row { set; get; }
 
-    private bool isModified = false;
+    private bool isModified { set; get; } = false;
 
     private bool _isJumped;
     private bool isJumped {
@@ -53,13 +50,44 @@
     protected override Task OnInitializedAsync()
     {
         _context = context;
-        race = _context.Races.Find(id);
+        if (id > 0)
+        {
+            race = _context.Races.Find(id);
+        }
+        else
+        {
+            race = new Race(){};
+        }
+
         return base.OnInitializedAsync();
     }
 
     private void CheckChanged()
     {
         isModified = true;
+    }
+
+
+    private bool isSaveClicked {
+        set
+        {
+            if (value==true)
+            {
+                if (race.Id == 0)
+                {
+                    _context.Races.Add(race);
+                    _context.SaveChanges();
+                    isModified = false;
+                }
+                else
+                {
+                    _context.Races.Update(race);
+                    _context.SaveChanges();
+                    isModified = false;
+                }
+            }
+        }
+        get { return isModified; }
     }
 
     private void JumpRelated() { }

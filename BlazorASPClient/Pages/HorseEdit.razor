@@ -12,10 +12,9 @@
     }
 <EditForm Model="horse">
     <InputNumber class="col-1" @bind-Value="horse.Id" />
-    <InputText class="col-3" @bind-Value="horse.Name" />
+    <InputText class="col-3" @bind-Value="horse.Name" @oninput="CheckChanged"/>
     <InputNumber class="col-1" @bind-Value="horse.Standing" @oninput="CheckChanged" />
-    @if(isModified) { <ToolUpdateSave @bind-isClicked="@isModified"></ToolUpdateSave>
-    }
+    @if(isModified) { <ToolUpdateSave @bind-isClicked="@isSaveClicked"></ToolUpdateSave> }
 </EditForm>
 }
 
@@ -34,7 +33,10 @@
     protected override Task OnInitializedAsync()
     {
         _context = context;
-        horse = _context.Horses.Find(id);
+        if (id > 0)
+        { horse = _context.Horses.Find(id); }
+        else
+        { horse = new Horse(); }
         return base.OnInitializedAsync();
     }
 
@@ -43,4 +45,26 @@
         isModified = true;
     }
 
+    private bool isSaveClicked
+    {
+        set
+        {
+            if (value == true)
+            {
+                if (horse.Id == 0)
+                {
+                    _context.Horses.Add(horse);
+                    _context.SaveChanges();
+                    isModified = false;
+                }
+                else
+                {
+                    _context.Horses.Update(horse);
+                    _context.SaveChanges();
+                    isModified = false;
+                }
+            }
+        }
+        get { return isModified; }
+    }
 }
